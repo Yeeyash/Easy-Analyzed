@@ -30,8 +30,18 @@ async def generateGraph(request: Request, file: UploadFile = File(...)):
 
     df = pd.read_csv(bytesContent)
 
+    dfQuantitative = []
+    dfQualitative = []
+
+    for i in df.columns:
+        if pd.api.types.is_numeric_dtype(df[i]):
+            dfQuantitative.append(i)
+        else:
+            dfQualitative.append(i)
+
+    # Line Plot
     fig, ax = plt.subplots()
-    ax.plot(df["Name"], df["Sports"])
+    ax.plot(df[dfQualitative[0]], df["Sports"]) #df["Name"] -> df[dfQualitative[0]], Expects series and not an array.
 
     buf = io.BytesIO()
     fig.savefig(buf, format='png')
@@ -41,4 +51,39 @@ async def generateGraph(request: Request, file: UploadFile = File(...)):
     imgBytes = buf.read()
     img64 = base64.b64encode(imgBytes).decode('utf-8')
 
-    return JSONResponse(content={"plot": f"data:img/png;base64,{img64}"})
+    # Bar Plot
+
+    barFig, barAx = plt.subplots()
+
+    buf2 = io.BytesIO()
+
+    barAx.bar(df["Name"], df["Sports"], width=1)
+    barFig.savefig(buf2, format='png')
+    plt.close(barFig)
+    buf2.seek(0)
+
+    barImgbytes = buf2.read()
+    barImg64 = base64.b64encode(barImgbytes).decode('utf-8')
+
+    # Scatter
+
+    # ScatterFig = plt.scatter(df["Name"], df["Sports"])
+
+    # Pie Plot
+    # Pie charts need numerical data to make and respective lables as well.
+
+    pieFig, pieAx = plt.subplots()
+    pieAx.pie(df["Sports"], labels=df["Name"])
+    pieAx.axis("equal")
+
+    buf3 = io.BytesIO()
+    pieFig.savefig(buf3, format='png')
+    plt.close(pieFig)
+    buf3.seek(0)
+
+    pieImgbytes = buf3.read()
+    pieImg64 = base64.b64encode(pieImgbytes).decode('utf-8')
+
+    print(pieImg64.__sizeof__() + barImg64.__sizeof__() + img64.__sizeof__()) #72730 bytes for testFile.
+
+    return JSONResponse(content={"plot1": f"data:img/png;base64,{img64}", "plot2": f"data:img/png;base64,{barImg64}", "plot3": f"data:img/png;base64,{pieImg64}"})
