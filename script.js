@@ -9,11 +9,20 @@ document.getElementById("input_data").addEventListener("submit", async function(
     })
 
     const result = await res.json();
+    
     const totalColumns = result.availableColumns;
+    const qualitativeCol = result.qualitative;
+    const quantitativeCol = result.quantitative;
+
+    JSON.stringify(quantitativeCol);
+    JSON.stringify(qualitativeCol);
     JSON.stringify(totalColumns);
+    
     console.log(result);
 
     document.getElementById("columns").innerText = totalColumns;
+    document.getElementById("qualitative").innerText = `Qualitative: ${qualitativeCol}`;
+    document.getElementById("quantitative").innerText = `Quantitative: ${quantitativeCol}`;
 
     document.getElementById("columnNames").style.visibility = "visible";
     

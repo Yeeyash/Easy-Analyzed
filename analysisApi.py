@@ -48,7 +48,16 @@ async def plots(request: Request, file: UploadFile = File(...)):
     fileContent = await file.read()
     bytesContent = BytesIO(fileContent)
     formContent = await request.form()
-    name = formContent.get("input_text")
+    colInput = formContent.get("input_text") #
+
+    # splitCols = colInput.split(',')
+    x, y = map(str, colInput.split(','))
+    x = x.strip()
+    y = y.strip()
+    # str(x, y)
+    # x, y = splitCols[0], splitCols[1]
+    # print(x, y)
+    # y: numerical/quantitative, x: qualitative.
 
     df = pd.read_csv(bytesContent)
 
@@ -63,7 +72,7 @@ async def plots(request: Request, file: UploadFile = File(...)):
 
     # Line Plot
     fig, ax = plt.subplots()
-    ax.plot(df[name], df["Sports"]) #df["Name"] -> df[dfQualitative[0]], Expects series and not an array.
+    ax.plot(df[x], df[y]) #df["Name"] -> df[dfQualitative[0]], Expects series and not an array.
 
     buf = io.BytesIO()
     fig.savefig(buf, format='png')
@@ -79,7 +88,7 @@ async def plots(request: Request, file: UploadFile = File(...)):
 
     buf2 = io.BytesIO()
 
-    barAx.bar(df[name], df["Sports"], width=1)
+    barAx.bar(df[x], df[y], width=1)
     barFig.savefig(buf2, format='png')
     plt.close(barFig)
     buf2.seek(0)
@@ -95,7 +104,7 @@ async def plots(request: Request, file: UploadFile = File(...)):
     # Pie charts need numerical data to make and respective lables as well.
 
     pieFig, pieAx = plt.subplots()
-    pieAx.pie(df["Sports"], labels=df[name])
+    pieAx.pie(df[y], labels=df[x])
     pieAx.axis("equal")
 
     buf3 = io.BytesIO()
