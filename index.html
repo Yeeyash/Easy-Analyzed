@@ -7,9 +7,17 @@
     <title>EaseAnalyzed</title>
 </head>
 <body>
-    <form id="input_data">
-        <input type="file" id="input_file" name="file">
-        <button type="submit">Process.</button>
+    <form id="input_data"><div class="input">
+            <input type="file" id="input_file" name="file">
+            <button type="submit">Process.</button>
+        </div>
+    </form>
+
+    <h3 id="columns"></h3>
+
+    <form id="columnNames" style="visibility: hidden;">
+        <input type="text" name="input_text" id="input_text" placeholder="Enter Column names.">
+        <button type="submit">plot.</button>
     </form>
 
     <div class="basicplots" id="basicplots">

@@ -9,22 +9,47 @@ document.getElementById("input_data").addEventListener("submit", async function(
     })
 
     const result = await res.json();
+    const totalColumns = result.availableColumns;
+    JSON.stringify(totalColumns);
     console.log(result);
 
-    //loading images from API:
+    document.getElementById("columns").innerText = totalColumns;
+
+    document.getElementById("columnNames").style.visibility = "visible";
+    
+})
+
+document.getElementById("columnNames").addEventListener("submit", async function(e){
+    e.preventDefault();
+
+    const formm2 = new FormData(document.getElementById("input_data"));
+    const input_text = document.getElementById("input_text").value;
+    formm2.append("input_text", input_text);
+
+    console.log(formm2);
+    // get image details based on previous column names.
+
+    const res2 = await fetch('http://127.0.0.1:8000/plot', {
+        method: 'POST',
+        body: formm2
+    });
+
+    const result2 = await res2.json();
+    console.log(result2);
+
     const img = document.createElement("img");
-    img.src = result.plot1;
+    img.src = result2.plot1;
 
     const barImg = document.createElement("img");
-    barImg.src = result.plot2;
+    barImg.src = result2.plot2;
 
     const pieImg = document.createElement("img");
-    pieImg.src = result.plot3;
-
-    // img.width = 150;
-    // // img.height = "auto";
+    pieImg.src = result2.plot3;
 
     document.getElementById("basicplots").appendChild(img);
     document.getElementById("basicplots").appendChild(barImg);
     document.getElementById("basicplots").appendChild(pieImg);
+    // document.getElementById("columns").innerText = result.availableColumns;
+
+    document.getElementById("basicplots").appendChild(img);
 })

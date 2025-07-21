@@ -39,9 +39,31 @@ async def generateGraph(request: Request, file: UploadFile = File(...)):
         else:
             dfQualitative.append(i)
 
+    availableColumns = dfQualitative + dfQuantitative
+
+    return JSONResponse(content={"availableColumns": availableColumns, "qualitative": dfQualitative, "quantitative": dfQuantitative})
+
+@fast.post('/plot')
+async def plots(request: Request, file: UploadFile = File(...)):
+    fileContent = await file.read()
+    bytesContent = BytesIO(fileContent)
+    formContent = await request.form()
+    name = formContent.get("input_text")
+
+    df = pd.read_csv(bytesContent)
+
+    dfQuantitative = []
+    dfQualitative = []
+
+    for i in df.columns:
+        if pd.api.types.is_numeric_dtype(df[i]):
+            dfQuantitative.append(i)
+        else:
+            dfQualitative.append(i)
+
     # Line Plot
     fig, ax = plt.subplots()
-    ax.plot(df[dfQualitative[0]], df["Sports"]) #df["Name"] -> df[dfQualitative[0]], Expects series and not an array.
+    ax.plot(df[name], df["Sports"]) #df["Name"] -> df[dfQualitative[0]], Expects series and not an array.
 
     buf = io.BytesIO()
     fig.savefig(buf, format='png')
@@ -57,7 +79,7 @@ async def generateGraph(request: Request, file: UploadFile = File(...)):
 
     buf2 = io.BytesIO()
 
-    barAx.bar(df["Name"], df["Sports"], width=1)
+    barAx.bar(df[name], df["Sports"], width=1)
     barFig.savefig(buf2, format='png')
     plt.close(barFig)
     buf2.seek(0)
@@ -73,7 +95,7 @@ async def generateGraph(request: Request, file: UploadFile = File(...)):
     # Pie charts need numerical data to make and respective lables as well.
 
     pieFig, pieAx = plt.subplots()
-    pieAx.pie(df["Sports"], labels=df["Name"])
+    pieAx.pie(df["Sports"], labels=df[name])
     pieAx.axis("equal")
 
     buf3 = io.BytesIO()
@@ -86,4 +108,4 @@ async def generateGraph(request: Request, file: UploadFile = File(...)):
 
     print(pieImg64.__sizeof__() + barImg64.__sizeof__() + img64.__sizeof__()) #72730 bytes for testFile.
 
-    return JSONResponse(content={"plot1": f"data:img/png;base64,{img64}", "plot2": f"data:img/png;base64,{barImg64}", "plot3": f"data:img/png;base64,{pieImg64}"})
+    return JSONResponse(content={"plot1": f"data:img/png;base64,{img64}", "plot2": f"data:img/png;base64,{barImg64}", "plot3": f"data:img/png;base64,{pieImg64}", "availableColumns": dfQualitative + dfQuantitative})
