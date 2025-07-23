@@ -46,6 +46,8 @@ document.getElementById("columnNames").addEventListener("submit", async function
     const result2 = await res2.json();
     console.log(result2);
 
+    document.getElementById("columnNames").style.visibility = "hidden";
+
     const img = document.createElement("img");
     img.src = result2.plot1;
 

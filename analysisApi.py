@@ -51,9 +51,10 @@ async def plots(request: Request, file: UploadFile = File(...)):
     colInput = formContent.get("input_text") #
 
     # splitCols = colInput.split(',')
-    x, y = map(str, colInput.split(','))
-    x = x.strip()
-    y = y.strip()
+    tempX, tempy = map(str, colInput.split(','))
+    tempX = tempX.strip()
+    tempy = tempy.strip()
+
     # str(x, y)
     # x, y = splitCols[0], splitCols[1]
     # print(x, y)
@@ -70,6 +71,14 @@ async def plots(request: Request, file: UploadFile = File(...)):
         else:
             dfQualitative.append(i)
 
+
+    if tempX in dfQualitative:
+        x = tempX
+        y = tempy
+    else:
+        y = tempX
+        x = tempy
+    
     # Line Plot
     fig, ax = plt.subplots()
     ax.plot(df[x], df[y]) #df["Name"] -> df[dfQualitative[0]], Expects series and not an array.
