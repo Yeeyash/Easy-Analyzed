@@ -54,13 +54,21 @@ document.getElementById("columnNames").addEventListener("submit", async function
     const barImg = document.createElement("img");
     barImg.src = result2.plot2;
 
-    const pieImg = document.createElement("img");
-    pieImg.src = result2.plot3;
+    // const pieImg = document.createElement("img");
+    // pieImg.src = result2.plot3;
+
+    const scatterImg = document.createElement("img");
+    scatterImg.src = result2.plot4;
+    
+    const histImg = document.createElement("img");
+    histImg.src = result2.plot5;
 
     document.getElementById("basicplots").appendChild(img);
     document.getElementById("basicplots").appendChild(barImg);
-    document.getElementById("basicplots").appendChild(pieImg);
+    // document.getElementById("basicplots").appendChild(pieImg);
+    document.getElementById("basicplots").appendChild(scatterImg);
+    document.getElementById("basicplots").appendChild(histImg);
     // document.getElementById("columns").innerText = result.availableColumns;
 
-    document.getElementById("basicplots").appendChild(img);
+    // document.getElementById("basicplots").appendChild(img);
 })
